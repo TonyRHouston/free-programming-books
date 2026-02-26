@@ -1,34 +1,27 @@
 name: free-programming-books-lint
-
-on: [pull_request]
-
+on:
+  workflow_dispatch: {}
 permissions:
   contents: read
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v5
     - name: Use Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: '16.x'
+        node-version: 16.x
     - run: npm install -g free-programming-books-lint
-
     - name: Pull Request
-      run: |
-        fpb-lint books casts courses more &> output.log
+      run: 'fpb-lint books casts courses more &> output.log
 
+        '
     - name: Clean output and create artifacts
       if: always()
-      run: |
-          mkdir -p ./pr
-          echo ${{ github.event.pull_request.html_url }} > ./pr/PRurl
-          cat output.log | sed -E 's:/home/runner/work/free-programming-books/|⚠.+::' | uniq > ./pr/error.log
-
+      run: "mkdir -p ./pr\necho ${{ github.event.pull_request.html_url }} > ./pr/PRurl\n\
+        cat output.log | sed -E 's:/home/runner/work/free-programming-books/|\u26A0\
+        .+::' | uniq > ./pr/error.log\n"
     - uses: actions/upload-artifact@v5
       if: always()
       with:
